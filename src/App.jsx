@@ -182,13 +182,33 @@ const InsightCard = ({ week, phase }) => {
 export default function App() {
   const [viewMode, setViewMode] = useState('patient');
   const [week, setWeek] = useState(24);
-  const [logs, setLogs] = useState([]); // EMPTY START
+  
+  // UPDATED: Load logs from localStorage on start
+  const [logs, setLogs] = useState(() => {
+    const savedLogs = localStorage.getItem('alaga_logs');
+    return savedLogs ? JSON.parse(savedLogs) : [];
+  });
+
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   
-  const [patientProfile, setPatientProfile] = useState({
-    name: 'User', age: 30, height: 160, weight: 60, bmi: 23.4, diagnosisWeek: 24, treatment: 'Diet & Exercise'
+  // UPDATED: Load profile from localStorage on start
+  const [patientProfile, setPatientProfile] = useState(() => {
+    const savedProfile = localStorage.getItem('alaga_profile');
+    return savedProfile ? JSON.parse(savedProfile) : {
+      name: 'User', age: 30, height: 160, weight: 60, bmi: 23.4, diagnosisWeek: 24, treatment: 'Diet & Exercise'
+    };
   });
+
+  // NEW: Save logs whenever they change
+  useEffect(() => {
+    localStorage.setItem('alaga_logs', JSON.stringify(logs));
+  }, [logs]);
+
+  // NEW: Save profile whenever it changes
+  useEffect(() => {
+    localStorage.setItem('alaga_profile', JSON.stringify(patientProfile));
+  }, [patientProfile]);
 
   const phase = useMemo(() => getPhase(week), [week]);
 
